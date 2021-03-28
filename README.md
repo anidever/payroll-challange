@@ -1,3 +1,4 @@
+# _NOTE:_ Project specific README can be found in `/flask_app`
 # Wave Software Development Challenge
 
 Applicants for the Full-stack Developer role at Wave must
