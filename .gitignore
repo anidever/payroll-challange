@@ -1,0 +1,23 @@
+.DS_Store
+.vscode
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python 
+venv
+__pycache__
+*.pyc
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask stuff:
+instance/
+.webassets-cache
