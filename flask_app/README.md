@@ -46,6 +46,8 @@ $ curl -F file=@time-report-42.csv localhost:5000/post_time_report
 There are 3 unit tests - 1 parametrized, adding upto 10 items total. They can be run by `pytest test_routes.py`. 
 **Reminder:**
 *As the tests are using the example csv in the repo, the filename will be in use in the db after the first test run, my suggestion is to run the tests after manual testing and tearing down the db and redis and re-starting the backend server. If not, the failure of the first test case is expected. This can be avoided by creating mock csv fixtures with different report_ids, [factory_boy](https://factoryboy.readthedocs.io/en/stable/) is useful for this purpose. As per time constraints, this is neglected.*
+### How to postman
+![postman](./postman.png)
 
 ### Design notes
 I've created a single table for this implementation, it has pros and cons. There is very small chance of spontaneous csv upload with the same report_id that might break the no duplicate report_id rule but this can avoided with a task queue in production env. Although there is a validation on single hours worked entry yet the table does allow multiple entries for the same, this comes brings flexibility to add backdated timesheets but also requires application level validation to make sure total hours worked is reasonable e.g not 25h a day. Also job_group is defined as `Enum` this limits the input, any other job group provided in a csv will cause issue, this might be extended by adding a new job group to JobGroup class but it's not automated.
