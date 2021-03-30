@@ -58,10 +58,10 @@ In addition to what was asked, the GET endpoint is also able to handle `employee
 ### Q&A
 - How did you test that your implementation was correct?
     - Unit tests are testing the basic functionality of the implementation. In addition to this, I've tested the application through manual end-to-end testing i.e uploading csv and getting payroll reports for different employee_id, start_date, end_date combinations.
-- If this application was destined for a production environment, what would you add or change?
-    - I'd configure Nginx as a web server and reverse proxy, for security and scalability reasons.
-    - I'd consider adding an authentication layer, [Flask-Security](https://pythonhosted.org/Flask-Security/) can provide both session and token based authentication.
-    - I'd add validation for every input related assumption given in the description, type checks, corrupted data checks etc. [Marshmallow](https://flask-marshmallow.readthedocs.io/en/latest/) is worth looking at for this purpose.
+- If this application was destined for a production environment, what would you add or change? I would:
+    - Configure Nginx as a web server and reverse proxy, for security and scalability reasons.
+    - Consider adding an authentication layer, [Flask-Security](https://pythonhosted.org/Flask-Security/) can provide both session and token based authentication.
+    - Add validation for every input related assumption given in the description, type checks, corrupted data checks etc. [Marshmallow](https://flask-marshmallow.readthedocs.io/en/latest/) is worth looking at for this purpose.
 - What compromises did you have to make as a result of the time constraints of this challenge?
 Given more time I would;
     - Increase the test coverage, add edge cases to ensure implementation correctness
