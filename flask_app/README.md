@@ -55,6 +55,7 @@ In addition to what was asked, the GET endpoint is also able to handle `employee
 
 ### Q&A
 - How did you test that your implementation was correct?
+    - Unit tests are testing the basic functionality of the implementation. In addition to this, I've tested the application through manual end-to-end testing i.e uploading csv and getting payroll reports for different employee_id, start_date, end_date combinations.
 - If this application was destined for a production environment, what would you add or change?
     - I'd configure Nginx as a web server and reverse proxy, for security and scalability reasons.
     - I'd consider adding an authentication layer, [Flask-Security](https://pythonhosted.org/Flask-Security/) can provide both session and token based authentication.
