@@ -45,9 +45,10 @@ $ curl -F file=@time-report-42.csv localhost:5000/post_time_report
 ### How to test
 There are 3 unit tests - 1 parametrized, adding upto 10 items total. They can be run by `pytest test_routes.py`. 
 **Reminder:**
-*As the tests are using the example csv in the repo, the filename will be in use in the db after the first test run, my suggestion is to run the tests after manual testing and tearing down the db and re-starting the backend server. This can be avoided by creating mock csv fixtures with different report_ids, [factory_boy](https://factoryboy.readthedocs.io/en/stable/) is useful for this purpose. As per time constraints, this is neglected.*
+*As the tests are using the example csv in the repo, the filename will be in use in the db after the first test run, my suggestion is to run the tests after manual testing and tearing down the db and redis and re-starting the backend server. If not, the failure of the first test case is expected. This can be avoided by creating mock csv fixtures with different report_ids, [factory_boy](https://factoryboy.readthedocs.io/en/stable/) is useful for this purpose. As per time constraints, this is neglected.*
 
-### Design trade-offs
+### Design notes
+I've created a single table for this implementation, it has pros and cons. There is very small chance of spontaneous csv upload with the same report_id that might break the no duplicate report_id rule but this can avoided with a task queue in production env. Although there is a validation on single hours worked entry yet the table does allow multiple entries for the same, this comes brings flexibility to add backdated timesheets but also requires application level validation to make sure total hours worked is reasonable e.g not 25h a day. Also job_group is defined as `Enum` this limits the input, any other job group provided in a csv will cause issue, this might be extended by adding a new job group to JobGroup class but it's not automated.
 
 ### Notes
 In addition to what was asked, the GET endpoint is also able to handle `employee_id`, `start_time` and `end_time` as query params to filter out results, if not provided it will fallback to default behavior. `http://localhost:5000/get_payroll_report?start_date=14/11/2016&end_date=26/12/2016&employee_id=1`, will fetch the results between (start_date, end_date) for employee_id = 1.
@@ -56,7 +57,7 @@ In addition to what was asked, the GET endpoint is also able to handle `employee
 - How did you test that your implementation was correct?
 - If this application was destined for a production environment, what would you add or change?
     - I'd configure Nginx as a web server and reverse proxy, for security and scalability reasons.
-    - I'd consider adding a security/authentication layer, [Flask-Security](https://pythonhosted.org/Flask-Security/) can provide both session and token based authentication.
+    - I'd consider adding an authentication layer, [Flask-Security](https://pythonhosted.org/Flask-Security/) can provide both session and token based authentication.
     - I'd add validation for every input related assumption given in the description, type checks, corrupted data checks etc. [Marshmallow](https://flask-marshmallow.readthedocs.io/en/latest/) is worth looking at for this purpose.
 - What compromises did you have to make as a result of the time constraints of this challenge?
 Given more time I would;
