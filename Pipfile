@@ -15,6 +15,7 @@ python-dotenv = "*"
 pandas = "*"
 flask-redis = "*"
 flask-migrate = "*"
+flask-marshmallow = "*"
 
 [requires]
 python_version = "3.7"
