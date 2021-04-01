@@ -27,6 +27,7 @@ def upload_time_report():
     report_id = int("".join(filter(str.isdigit, filename)))
     stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
     dataframe = pandas.read_csv(stream)
+    employee_ids = dataframe["employee id"].unique()
     for record in dataframe.itertuples():
         data = {
             "report_id": report_id,
@@ -39,6 +40,8 @@ def upload_time_report():
     db.session.commit()
 
     # cache the upload timestamp
+    for employee_id in employee_ids:
+        utils.cache_content(str(employee_id), {}, ttl=3600)
     utils.cache_content("timestamp", {})
 
     return "", HTTPStatus.CREATED

@@ -2,6 +2,7 @@ from werkzeug.exceptions import BadRequest
 from sqlalchemy import func, case, extract
 from calendar import monthrange
 from datetime import date
+from os import environ
 
 import locale
 import pandas
@@ -29,9 +30,11 @@ def is_file_allowed(filename):
     return False
 
 
-def cache_content(key, payload):
+def cache_content(key, payload, ttl=None):
     timestamp = pandas.Timestamp.now().isoformat()
-    redis.set(key, json.dumps({"payload": payload, "timestamp": timestamp}))
+    if not ttl:
+        ttl = environ.get("REDIS_TTL")
+    redis.set(key, json.dumps({"payload": payload, "timestamp": timestamp}), ex=ttl)
 
 
 def get_payload(employee_id=None, start_date=None, end_date=None):
@@ -42,6 +45,19 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
     Else queried from the database
     """
     params = employee_id or start_date or end_date
+    only_employee_id = employee_id and not start_date and not end_date
+
+    if only_employee_id and redis.exists(employee_id):
+        # lookup cache only after the first file upload
+        cached_content = json.loads(redis.get(employee_id))
+        cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
+        upload_timestamp = pandas.to_datetime(
+            json.loads(redis.get("timestamp"))["timestamp"]
+        )
+        # return cached content if not expired
+        if cache_timestamp > upload_timestamp:
+            return cached_content["payload"]
+
     if not params and (redis.exists(DEFAULT_KEY) and redis.exists("timestamp")):
         # lookup cache only after the first file upload
         cached_content = json.loads(redis.get(DEFAULT_KEY))
@@ -110,6 +126,8 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
                 }
             )
 
+    if only_employee_id:
+        cache_content(employee_id, payload)
     if not params:
         # cache the default case only, no query params
         cache_content(DEFAULT_KEY, payload)
