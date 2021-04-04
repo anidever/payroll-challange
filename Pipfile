@@ -16,6 +16,7 @@ pandas = "*"
 flask-redis = "*"
 flask-migrate = "*"
 flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"
