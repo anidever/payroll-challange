@@ -68,13 +68,11 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
     only_employee_id = employee_id and not start_date and not end_date
 
     if only_employee_id and redis.exists(employee_id):
-        # lookup cache only after the first file upload
         cached_content = json.loads(redis.get(employee_id))
         cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
         upload_timestamp = pandas.to_datetime(
             json.loads(redis.get("timestamp"))["timestamp"]
         )
-        # return cached content if not expired
         if cache_timestamp > upload_timestamp:
             return cached_content["payload"]
 
@@ -145,6 +143,7 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
                     "amountPaid": locale.currency(
                         record.sum_hours * record.job_group.value
                     ),
+                    "job_group": record.job_group.name,
                 }
             )
 
