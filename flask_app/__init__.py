@@ -27,4 +27,4 @@ db, migrate = init_db(app)
 redis = init_cache(app)
 marshmallow = Marshmallow(app)
 
-from flask_app import models
+from flask_app import routes
