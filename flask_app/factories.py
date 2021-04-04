@@ -17,6 +17,6 @@ class TimeReportFactory(SQLAlchemyModelFactory):
 
     report_id = randint()
     employee_id = randint()
-    date = pandas.Timestamp.now().datetime().date
+    date = pandas.Timestamp.now().date()
     hours_worked = randint(1, 23)
     job_group = choices(["A", "B"])
