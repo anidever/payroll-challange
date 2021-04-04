@@ -10,7 +10,7 @@ class JobGroup(Enum):
 
 class TimeReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    report_id = db.Column(db.Integer, nullable=False)
+    report_id = db.Column(db.Integer, index=True, nullable=False)
     employee_id = db.Column(db.Integer, index=True, nullable=False)
     date = db.Column(db.Date, index=True, nullable=False)
     hours_worked = db.Column(db.Float, nullable=False)

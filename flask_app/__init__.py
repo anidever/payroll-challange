@@ -1,7 +1,9 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_redis import FlaskRedis
-from config import ProductionConfig, DevelopmentConfig
+from flask_migrate import Migrate
+from flask_marshmallow import Marshmallow
+from config import DevelopmentConfig
 
 
 def create_app():
@@ -10,12 +12,19 @@ def create_app():
     return app
 
 
+def init_db(app):
+    db = SQLAlchemy(app)
+    migrate = Migrate(app, db)
+    return db, migrate
+
+
+def init_cache(app):
+    return FlaskRedis(app)
+
+
 app = create_app()
-db = SQLAlchemy(app)
-redis = FlaskRedis(app)
+db, migrate = init_db(app)
+redis = init_cache(app)
+marshmallow = Marshmallow(app)
 
-with app.app_context():
-    from flask_app import routes
-    from flask_app import models
-
-    db.create_all()
+from flask_app import models
