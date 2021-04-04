@@ -32,9 +32,18 @@ def is_file_allowed(filename):
 
 def prep_df_for_bulk_insert(dataframe, report_id):
     dataframe["report_id"] = report_id
-    dataframe["date"] = pandas.to_datetime(dataframe["date"], dayfirst=True).dt.date
-    dataframe.rename(columns={"employee id": "employee_id", "hours worked": "hours_worked", "job group": "job_group"}, inplace=True)
-    records = dataframe.to_dict('records')
+    dataframe["date"] = pandas.to_datetime(
+        dataframe["date"], dayfirst=True
+    ).dt.date
+    dataframe.rename(
+        columns={
+            "employee id": "employee_id",
+            "hours worked": "hours_worked",
+            "job group": "job_group",
+        },
+        inplace=True,
+    )
+    records = dataframe.to_dict("records")
 
     return records
 
@@ -43,7 +52,9 @@ def cache_content(key, payload, ttl=None):
     timestamp = pandas.Timestamp.now().isoformat()
     if not ttl:
         ttl = environ.get("REDIS_TTL")
-    redis.set(key, json.dumps({"payload": payload, "timestamp": timestamp}), ex=ttl)
+    redis.set(
+        key, json.dumps({"payload": payload, "timestamp": timestamp}), ex=ttl
+    )
 
 
 def get_payload(employee_id=None, start_date=None, end_date=None):
@@ -67,7 +78,9 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
         if cache_timestamp > upload_timestamp:
             return cached_content["payload"]
 
-    if not params and (redis.exists(DEFAULT_KEY) and redis.exists("timestamp")):
+    if not params and (
+        redis.exists(DEFAULT_KEY) and redis.exists("timestamp")
+    ):
         # lookup cache only after the first file upload
         cached_content = json.loads(redis.get(DEFAULT_KEY))
         cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
