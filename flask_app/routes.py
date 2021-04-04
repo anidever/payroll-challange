@@ -28,15 +28,8 @@ def upload_time_report():
     stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
     dataframe = pandas.read_csv(stream)
     employee_ids = dataframe["employee id"].unique()
-    for record in dataframe.itertuples():
-        data = {
-            "report_id": report_id,
-            "date": pandas.to_datetime(record.date, dayfirst=True).date(),
-            "hours_worked": record[2],
-            "employee_id": record[3],
-            "job_group": record[4],
-        }
-        db.session.add(TimeReport(**data))
+    records = utils.prep_df_for_bulk_insert(dataframe, report_id)
+    db.session.connection().execute(TimeReport.__table__.insert(), records)
     db.session.commit()
 
     # cache the upload timestamp

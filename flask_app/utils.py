@@ -30,6 +30,15 @@ def is_file_allowed(filename):
     return False
 
 
+def prep_df_for_bulk_insert(dataframe, report_id):
+    dataframe["report_id"] = report_id
+    dataframe["date"] = pandas.to_datetime(dataframe["date"], dayfirst=True).dt.date
+    dataframe.rename(columns={"employee id": "employee_id", "hours worked": "hours_worked", "job group": "job_group"}, inplace=True)
+    records = dataframe.to_dict('records')
+
+    return records
+
+
 def cache_content(key, payload, ttl=None):
     timestamp = pandas.Timestamp.now().isoformat()
     if not ttl:
