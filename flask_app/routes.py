@@ -41,6 +41,8 @@ def upload_time_report():
     report_id = int("".join(filter(str.isdigit, filename)))
     stream = StringIO(file.stream.read().decode("UTF8"), newline=None)
     dataframe = pandas.read_csv(stream)
+    if dataframe.empty:
+        raise BadRequest("File has no entries")
     employee_ids = dataframe["employee id"].unique()
     records = utils.prep_df_for_bulk_insert(dataframe, report_id)
     db.session.connection().execute(TimeReport.__table__.insert(), records)
