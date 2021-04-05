@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_redis import FlaskRedis
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager
 from config import DevelopmentConfig
 
 
@@ -26,5 +27,6 @@ app = create_app()
 db, migrate = init_db(app)
 redis = init_cache(app)
 marshmallow = Marshmallow(app)
+jwt = JWTManager(app)
 
 from flask_app import routes

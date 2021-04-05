@@ -57,6 +57,17 @@ def cache_content(key, payload, ttl=None):
     )
 
 
+def check_cache(key):
+    cached_content = json.loads(redis.get(key))
+    cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
+    upload_timestamp = pandas.to_datetime(
+        json.loads(redis.get(key))["timestamp"]
+    )
+    if cache_timestamp > upload_timestamp:
+        return cached_content["payload"]
+    return {}
+
+
 def get_payload(employee_id=None, start_date=None, end_date=None):
     """
     If no query params passed:
@@ -68,27 +79,16 @@ def get_payload(employee_id=None, start_date=None, end_date=None):
     only_employee_id = employee_id and not start_date and not end_date
 
     if only_employee_id and redis.exists(employee_id):
-        cached_content = json.loads(redis.get(employee_id))
-        cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
-        upload_timestamp = pandas.to_datetime(
-            json.loads(redis.get("timestamp"))["timestamp"]
-        )
-        if cache_timestamp > upload_timestamp:
-            return cached_content["payload"]
+        cached_content = check_cache(employee_id)
+        if cached_content:
+            return cached_content
 
     if not params and (
         redis.exists(DEFAULT_KEY) and redis.exists("timestamp")
     ):
-        # lookup cache only after the first file upload
-        cached_content = json.loads(redis.get(DEFAULT_KEY))
-        cache_timestamp = pandas.to_datetime(cached_content["timestamp"])
-        upload_timestamp = pandas.to_datetime(
-            json.loads(redis.get("timestamp"))["timestamp"]
-        )
-
-        # return cached content if not expired
-        if cache_timestamp > upload_timestamp:
-            return cached_content["payload"]
+        cached_content = check_cache(DEFAULT_KEY)
+        if cached_content:
+            return cached_content
 
     query = (
         db.session.query(

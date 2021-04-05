@@ -18,6 +18,7 @@ flask-redis = "*"
 flask-migrate = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.7"

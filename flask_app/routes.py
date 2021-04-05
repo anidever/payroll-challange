@@ -1,13 +1,27 @@
 from flask import jsonify, request
 from http import HTTPStatus
 from io import StringIO
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 
 import pandas
 
 from flask_app import app, db
+from flask_jwt_extended import (
+    create_access_token,
+    jwt_required,
+)
 from flask_app.models import TimeReport
 from flask_app import utils
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.args.get("username", None)
+    if username == "test":
+        raise Unauthorized("Bad username or password")
+
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token)
 
 
 @app.route("/post_time_report", methods=["POST"])
@@ -41,6 +55,7 @@ def upload_time_report():
 
 
 @app.route("/get_payroll_report", methods=["GET"])
+# @jwt_required()
 def get_payroll_report():
     """
     Retrieve payroll report
