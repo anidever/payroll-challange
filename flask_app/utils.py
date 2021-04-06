@@ -30,6 +30,16 @@ def is_file_allowed(filename):
     return False
 
 
+def is_valid_dataframe(dataframe):
+    if dataframe.empty:
+        raise BadRequest("File has no entries")
+    cols = dataframe.columns.values
+    if cols != ["date" "hours worked" "employee id" "job group"]:
+        raise BadRequest("File columns are faulty")
+
+    return True
+
+
 def prep_df_for_bulk_insert(dataframe, report_id):
     dataframe["report_id"] = report_id
     dataframe["date"] = pandas.to_datetime(
