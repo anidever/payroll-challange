@@ -33,8 +33,8 @@ def is_file_allowed(filename):
 def is_valid_dataframe(dataframe):
     if dataframe.empty:
         raise BadRequest("File has no entries")
-    cols = dataframe.columns.values
-    if cols != ["date" "hours worked" "employee id" "job group"]:
+    cols = dataframe.columns.values.tolist()
+    if cols != ["date", "hours worked", "employee id", "job group"]:
         raise BadRequest("File columns are faulty")
 
     return True
